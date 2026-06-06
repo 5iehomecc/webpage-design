@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>全球时区转换器</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23007aff'/%3E%3Cellipse cx='32' cy='32' rx='14' ry='30' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='5' ry='30' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='1.5'/%3E%3Cline x1='2' y1='32' x2='62' y2='32' stroke='rgba(255,255,255,0.35)' stroke-width='2'/%3E%3Cline x1='5' y1='20' x2='59' y2='20' stroke='rgba(255,255,255,0.2)' stroke-width='1.5'/%3E%3Cline x1='5' y1='44' x2='59' y2='44' stroke='rgba(255,255,255,0.2)' stroke-width='1.5'/%3E%3Cline x1='32' y1='32' x2='32' y2='13' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='32' y1='32' x2='46' y2='39' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f2f2f7;--card:#fff;--text:#1c1c1e;--sec:#8e8e93;--ter:#aeaeb2;
+  --accent:#007aff;--al:rgba(0,122,255,.08);--am:rgba(0,122,255,.15);
+  --sep:rgba(60,60,67,.1);--r:16px;--rx:8px;
+  --dbg:linear-gradient(160deg,#fff9e6,#fff3cc 40%,#ffe8a3);
+  --db:#f0d060;--dt:#6b4e00;--ds:#9a7b20;
+  --nbg:linear-gradient(160deg,#1a1f3a,#1e2750 40%,#253060);
+  --nb:#3a4a80;--nt:#e0e6ff;--ns:#8894c0;
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;align-items:center}
+.w{max-width:900px;margin:0 auto;padding:28px 16px;width:100%}
+header{text-align:center;margin-bottom:20px}
+header h1{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+header p{color:var(--sec);font-size:.82rem;margin-top:3px}
+.pk{background:var(--card);border-radius:var(--r);box-shadow:0 1px 8px rgba(0,0,0,.05);padding:20px 24px;margin-bottom:16px}
+.pk-t{text-align:center;font-size:.85rem;font-weight:600;color:var(--sec);margin-bottom:14px;letter-spacing:.02em}
+.pk-r{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.dt{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--sep);border-radius:var(--rx);padding:10px 14px;cursor:pointer;font-family:inherit;font-size:.92rem;font-weight:500;color:var(--text);transition:border-color .15s,background .15s}
+.dt:hover{background:var(--sep)}
+.dt svg{width:16px;height:16px;color:var(--accent);flex-shrink:0}
+.ts{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:.92rem;font-weight:600;background:var(--bg);color:var(--text);border:1px solid var(--sep);border-radius:var(--rx);padding:10px 28px 10px 12px;outline:none;cursor:pointer;transition:border-color .15s;width:72px;text-align:center;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%238e8e93' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.ts:focus{border-color:var(--accent)}
+.tsep{font-size:1.1rem;font-weight:700;color:var(--sec);padding:0 2px}
+.tlab{font-size:.72rem;font-weight:600;color:var(--sec);letter-spacing:.04em}
+.br{font-family:inherit;font-size:.78rem;font-weight:600;color:var(--accent);background:var(--al);border:none;border-radius:var(--rx);padding:10px 16px;cursor:pointer;white-space:nowrap;transition:background .15s,transform .1s}
+.br:hover{background:var(--am)}
+.br:active{transform:scale(.97)}
+.co{position:fixed;inset:0;background:rgba(0,0,0,.2);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.co.show{display:flex}
+.cp{background:var(--card);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.1);padding:20px;width:300px;animation:pi .2s ease}
+@keyframes pi{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.cn-r{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cn-r .ct{font-size:.92rem;font-weight:600}
+.cb{width:30px;height:30px;border:none;background:var(--bg);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text);transition:background .15s;line-height:1}
+.cb:hover{background:var(--sep)}
+.cw{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px}
+.cw span{text-align:center;font-size:.65rem;font-weight:600;color:var(--ter);padding:4px 0}
+.cd-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:500;border-radius:50%;cursor:pointer;color:var(--text);transition:background .12s,color .12s}
+.cd:hover{background:var(--sep)}
+.cd.ot{color:var(--ter);cursor:default}
+.cd.td{font-weight:700;color:var(--accent)}
+.cd.sl{background:var(--accent);color:#fff;font-weight:600}
+.cd.sl:hover{background:var(--accent)}
+.cts{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.c{border-radius:var(--r);padding:18px 10px 14px;cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform .2s,box-shadow .2s,border-color .2s;border:2px solid transparent;user-select:none}
+.c.dy{background:var(--dbg);border-color:var(--db);box-shadow:0 2px 12px rgba(240,208,96,.15)}
+.c.nt{background:var(--nbg);border-color:var(--nb);box-shadow:0 2px 12px rgba(30,30,80,.25)}
+.c.dy.ac{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent),0 8px 28px rgba(0,122,255,.2)}
+.c.nt.ac{border-color:#FFD54F;box-shadow:0 0 0 2.5px #FFD54F,0 0 20px rgba(255,213,79,.35),0 8px 28px rgba(255,213,79,.2)}
+.c:hover{transform:translateY(-2px)}
+.ci{font-size:1.6rem;line-height:1;margin-bottom:10px}
+.cf{margin-bottom:6px;line-height:0}
+.cf svg{display:block;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cnm{font-size:1rem;font-weight:800;margin-bottom:1px;letter-spacing:-.01em}
+.c.dy .cnm,.c.dy .ctm{color:var(--dt)}
+.c.nt .cnm,.c.nt .ctm{color:var(--nt)}
+.ctm{font-size:1.85rem;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.cdte{font-size:.65rem;margin-bottom:6px;min-height:13px}
+.c.dy .cdte{color:var(--ds)}
+.c.nt .cdte{color:var(--ns)}
+.dst{font-size:.55rem;font-weight:600;letter-spacing:.04em;padding:2px 7px;border-radius:10px;display:none;align-items:center;gap:3px}
+.dst.on{display:inline-flex}
+.c.dy .dst{background:rgba(107,78,0,.1);color:#8b6914}
+.c.nt .dst{background:rgba(255,255,255,.1);color:#7ef5a0}
+.dd{width:4px;height:4px;border-radius:50%}
+.c.dy .dd{background:#8b6914}
+.c.nt .dd{background:#7ef5a0}
+.cof{font-size:.58rem;margin-top:6px;padding-top:6px;border-top:1px solid;width:100%;font-variant-numeric:tabular-nums}
+.c.dy .cof{color:var(--ds);border-top-color:rgba(180,140,40,.15)}
+.c.nt .cof{color:var(--ns);border-top-color:rgba(255,255,255,.08)}
+.cba{font-size:.5rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:4px;opacity:0;transition:opacity .25s}
+.c.ac .cba{opacity:1}
+.c.dy .cba{color:var(--accent)}
+.c.nt .cba{color:#FFD54F}
+.ft{text-align:center;margin-top:24px;font-size:.65rem;color:var(--ter)}
+.ft a{color:var(--sec);text-decoration:none;transition:color .15s}
+.ft a:hover{color:var(--text)}
+@media(max-width:860px){.cts{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.w{padding:18px 8px 36px}header h1{font-size:1.2rem}.cts{grid-template-columns:repeat(2,1fr)}.ctm{font-size:1.4rem}.pk-r{gap:8px}}
+</style>
+</head>
+<body>
+<div class="w">
+  <header><h1>🌍 全球时区转换器</h1><p>点击城市设为基准 · 自动识别夏令时</p></header>
+  <div class="pk">
+    <div class="pk-t">日期和时间</div>
+    <div class="pk-r">
+      <button class="dt" id="dTrig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="dLbl"></span></button>
+      <span class="tlab">时</span><select class="ts" id="sH"></select><span class="tsep">:</span><span class="tlab">分</span><select class="ts" id="sM"></select>
+      <button class="br" id="bRst">重置北京时间</button>
+    </div>
+  </div>
+  <div class="cts" id="cts"></div>
+  <p class="ft">夏令时基于 IANA 时区数据库 · 所有转换本地完成 · Copyright © <a href="https://www.5iehome.cc" target="_blank">E家分享</a></p>
+</div>
+<div class="co" id="cOvr">
+  <div class="cp">
+    <div class="cn-r"><button class="cb" id="cPrv">‹</button><span class="ct" id="cTtl"></span><button class="cb" id="cNxt">›</button></div>
+    <div class="cw"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+    <div class="cd-g" id="cDys"></div>
+  </div>
+</div>
+<script>
+(function(){
+var Z=[
+  {id:'Asia/Shanghai',f:'CN',c:'北京',nD:1},
+  {id:'Europe/Madrid',f:'ES',c:'马德里',nD:0},
+  {id:'Europe/Zurich',f:'CH',c:'苏黎世',nD:0},
+  {id:'Europe/Helsinki',f:'FI',c:'赫尔辛基',nD:0},
+  {id:'America/Chicago',f:'US',c:'密尔沃基',nD:0}
+];
+var F={
+CN:'<svg viewBox="0 0 36 24" width="36" height="24"><rect width="36" height="24" fill="#dd2d26" rx="2"/><polygon points="6,4 7.24,7.56 3.82,5.07 8.18,5.07 4.76,7.56" fill="#fddd00"/><polygon points="12,1.5 12.42,2.79 11.13,1.85 12.87,1.85 11.58,2.79" fill="#fddd00"/><polygon points="14,4.5 14.42,5.79 13.13,4.85 14.87,4.85 13.58,5.79" fill="#fddd00"/><polygon points="14,8.5 14.42,9.79 13.13,8.85 14.87,8.85 13.58,9.79" fill="#fddd00"/><polygon points="12,11.5 12.42,12.79 11.13,11.85 12.87,11.85 11.58,12.79" fill="#fddd00"/></svg>',
+ES:'<svg viewBox="0 0 36 24" width="36" height="24"><rect width="36" height="24" fill="#c52127" rx="2"/><rect y="6" width="36" height="12" fill="#ffc40d"/><g transform="translate(11,6.5)"><path d="M1.5,-.5 L3,-1.2 L4.5,-.5 L6,-1.2 L7.5,-.5 L9,-1.2 L10.5,-.5 L10.5,.5 L1.5,.5Z" fill="#ffc40d" stroke="#8B6914" stroke-width=".2"/><path d="M.5,.5 L11.5,.5 L11.5,5.5 Q6,8.5 .5,5.5Z" fill="#c52127" stroke="#8B6914" stroke-width=".3"/><rect x=".8" y=".8" width="4.7" height="2.1" fill="#c52127"/><rect x="6" y=".8" width="4.7" height="2.1" fill="#fff"/><rect x=".8" y="3.1" width="4.7" height="2.1" fill="#ffc40d"/><rect x="6" y="3.1" width="4.7" height="2.1" fill="#c52127"/></g></svg>',
+CH:'<svg viewBox="0 0 36 24" width="36" height="24"><rect width="36" height="24" fill="#ee4323" rx="2"/><rect x="15" y="3" width="6" height="18" fill="#fff"/><rect x="9" y="9" width="18" height="6" fill="#fff"/></svg>',
+FI:'<svg viewBox="0 0 36 24" width="36" height="24"><rect width="36" height="24" fill="#fff" rx="2"/><rect x="10" width="4" height="24" fill="#233d7b"/><rect y="8" width="36" height="4" fill="#233d7b"/></svg>',
+US:'<svg viewBox="0 0 36 24" width="36" height="24"><rect width="36" height="24" fill="#fff" rx="2"/><rect y="0" width="36" height="1.85" fill="#b22234"/><rect y="3.69" width="36" height="1.85" fill="#b22234"/><rect y="7.38" width="36" height="1.85" fill="#b22234"/><rect y="11.08" width="36" height="1.85" fill="#b22234"/><rect y="14.77" width="36" height="1.85" fill="#b22234"/><rect y="18.46" width="36" height="1.85" fill="#b22234"/><rect y="22.15" width="36" height="1.85" fill="#b22234"/><rect width="15" height="12.92" fill="#3c3b6e" rx="2"/><circle cx="3" cy="2.5" r=".7" fill="#fff"/><circle cx="6" cy="2.5" r=".7" fill="#fff"/><circle cx="9" cy="2.5" r=".7" fill="#fff"/><circle cx="12" cy="2.5" r=".7" fill="#fff"/><circle cx="4.5" cy="4.5" r=".7" fill="#fff"/><circle cx="7.5" cy="4.5" r=".7" fill="#fff"/><circle cx="10.5" cy="4.5" r=".7" fill="#fff"/><circle cx="3" cy="6.5" r=".7" fill="#fff"/><circle cx="6" cy="6.5" r=".7" fill="#fff"/><circle cx="9" cy="6.5" r=".7" fill="#fff"/><circle cx="12" cy="6.5" r=".7" fill="#fff"/><circle cx="4.5" cy="8.5" r=".7" fill="#fff"/><circle cx="7.5" cy="8.5" r=".7" fill="#fff"/><circle cx="10.5" cy="8.5" r=".7" fill="#fff"/><circle cx="3" cy="10.5" r=".7" fill="#fff"/><circle cx="6" cy="10.5" r=".7" fill="#fff"/><circle cx="9" cy="10.5" r=".7" fill="#fff"/><circle cx="12" cy="10.5" r=".7" fill="#fff"/></svg>'
+};
+var $=function(id){return document.getElementById(id)};
+var el={dLbl:$('dLbl'),sH:$('sH'),sM:$('sM'),cts:$('cts'),cOvr:$('cOvr'),cTtl:$('cTtl'),cDys:$('cDys')};
+var base='Asia/Shanghai',sY,sMo,sD,sH,sMi,cY,cMo;
+var cards=[];
+var _c={};
+
+function offMin(tz,d){
+  var k='o'+tz;
+  if(!_c[k])_c[k]=new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  var p=_c[k].formatToParts(d),v={};
+  for(var i=0;i<p.length;i++)v[p[i].type]=p[i].value;
+  var h=+v.hour;if(h===24)h=0;
+  return(Date.UTC(+v.year,+v.month-1,+v.day,h,+v.minute,+v.second)-d.getTime())/6e4;
+}
+function isDST(tz,d){
+  try{
+    var k='d'+tz;
+    if(!_c[k])_c[k]=new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'long'});
+    var p=_c[k].formatToParts(d),n;
+    for(var i=0;i<p.length;i++){if(p[i].type==='timeZoneName'){n=p[i];break}}
+    if(n){var v=n.value.toLowerCase();return v.indexOf('summer')>-1||v.indexOf('daylight')>-1}
+  }catch(e){}
+  var y=d.getUTCFullYear();
+  return offMin(tz,d)>Math.min(offMin(tz,new Date(Date.UTC(y,0,1))),offMin(tz,new Date(Date.UTC(y,6,1))));
+}
+function fmtOff(m){
+  var s=m>=0?'+':'-',a=Math.abs(m);
+  return'UTC'+s+Math.floor(a/60)+(a%60?':'+String(a%60).padStart(2,'0'):'');
+}
+function toUTC(y,m,d,h,mi,tz){
+  var u=new Date(Date.UTC(y,m-1,d,h,mi));
+  return new Date(u.getTime()-offMin(tz,u)*6e4);
+}
+function bjNow(){
+  var n=new Date(),tz='Asia/Shanghai';
+  var ds=n.toLocaleString('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).split('-');
+  var ts=n.toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit'}).split(':');
+  var mi=Math.round(parseInt(ts[1])/5)*5;
+  if(mi>=60)mi=55;
+  return{y:+ds[0],mo:+ds[1],d:+ds[2],h:+ts[0],mi:mi};
+}
+function updLbl(){el.dLbl.textContent=sY+'年'+sMo+'月'+sD+'日'}
+function bldSel(){
+  var hE=el.sH,mE=el.sM,i;
+  for(i=0;i<24;i++){var o=document.createElement('option');o.value=i;o.textContent=String(i).padStart(2,'0');hE.appendChild(o)}
+  for(i=0;i<60;i+=5){var o2=document.createElement('option');o2.value=i;o2.textContent=String(i).padStart(2,'0');mE.appendChild(o2)}
+  hE.value=sH;mE.value=sMi;
+  hE.onchange=function(){sH=+hE.value;render()};
+  mE.onchange=function(){sMi=+mE.value;render()};
+}
+function createCards(){
+  var box=el.cts,frag=document.createDocumentFragment();
+  for(var i=0;i<Z.length;i++){
+    var z=Z[i];
+    var e=document.createElement('div');
+    e.className='c';
+    e.setAttribute('data-tz',z.id);
+    e.innerHTML='<div class="ci"></div><div class="cf">'+F[z.f]+'</div><div class="cnm">'+z.c+'</div><div class="ctm"></div><div class="cdte"></div><span class="dst"><span class="dd"></span>夏令时</span><div class="cof"></div><div class="cba">基准</div>';
+    cards.push({el:e,icon:e.querySelector('.ci'),time:e.querySelector('.ctm'),date:e.querySelector('.cdte'),dst:e.querySelector('.dst'),off:e.querySelector('.cof'),tz:z.id,nD:z.nD,
+      dtfT:new Intl.DateTimeFormat('zh-CN',{timeZone:z.id,hour:'2-digit',minute:'2-digit',hour12:false}),
+      dtfD:new Intl.DateTimeFormat('zh-CN',{timeZone:z.id,year:'numeric',month:'short',day:'numeric',weekday:'short'})
+    });
+    frag.appendChild(e);
+  }
+  box.appendChild(frag);
+  box.onclick=function(ev){
+    var t=ev.target;
+    while(t&&t.parentNode!==box)t=t.parentNode;
+    if(!t)return;
+    var tz=t.getAttribute('data-tz');
+    if(tz&&tz!==base){base=tz;render()}
+  };
+}
+function renderCal(){
+  el.cTtl.textContent=cY+'年'+cMo+'月';
+  var g=el.cDys;
+  var fd=new Date(cY,cMo-1,1).getDay();
+  var dim=new Date(cY,cMo,0).getDate();
+  var pdim=new Date(cY,cMo-1,0).getDate();
+  var now=new Date();
+  var h='';
+  for(var i=fd-1;i>=0;i--)h+='<div class="cd ot">'+(pdim-i)+'</div>';
+  for(var d=1;d<=dim;d++){
+    var cls='cd';
+    if(cY===now.getFullYear()&&cMo===now.getMonth()+1&&d===now.getDate())cls+=' td';
+    if(cY===sY&&cMo===sMo&&d===sD)cls+=' sl';
+    h+='<div class="'+cls+'" data-d="'+d+'">'+d+'</div>';
+  }
+  var tot=fd+dim,rem=(7-tot%7)%7;
+  for(var j=1;j<=rem;j++)h+='<div class="cd ot">'+j+'</div>';
+  g.innerHTML=h;
+}
+el.cDys.onclick=function(ev){
+  var t=ev.target,d=t.getAttribute('data-d');
+  if(!d)return;
+  sY=cY;sMo=cMo;sD=+d;el.cOvr.classList.remove('show');updLbl();render();
+};
+$('dTrig').onclick=function(){cY=sY;cMo=sMo;renderCal();el.cOvr.classList.add('show')};
+el.cOvr.onclick=function(e){if(e.target===el.cOvr)el.cOvr.classList.remove('show')};
+$('cPrv').onclick=function(){cMo--;if(cMo<1){cMo=12;cY--}renderCal()};
+$('cNxt').onclick=function(){cMo++;if(cMo>12){cMo=1;cY++}renderCal()};
+
+function render(){
+  el.sH.value=sH;el.sM.value=sMi;
+  updLbl();
+  var utc=toUTC(sY,sMo,sD,sH,sMi,base);
+  for(var i=0;i<cards.length;i++){
+    var cd=cards[i],act=cd.tz===base;
+    var off=offMin(cd.tz,utc);
+    var dst=isDST(cd.tz,utc);
+    var tp=cd.dtfT.formatToParts(utc),tv={};
+    for(var j=0;j<tp.length;j++)tv[tp[j].type]=tp[j].value;
+    var h=+tv.hour;if(h===24)h=0;
+    var time=String(h).padStart(2,'0')+':'+tv.minute;
+    var date=cd.dtfD.format(utc);
+    var dy=h>=6&&h<18;
+    cd.el.className='c '+(dy?'dy':'nt')+(act?' ac':'');
+    cd.icon.textContent=dy?'☀️':'🌙';
+    cd.time.textContent=time;
+    cd.date.textContent=date;
+    if(!cd.nD&&dst)cd.dst.classList.add('on');else cd.dst.classList.remove('on');
+    cd.off.textContent=fmtOff(off);
+  }
+}
+$('bRst').onclick=function(){base='Asia/Shanghai';var n=bjNow();sY=n.y;sMo=n.mo;sD=n.d;sH=n.h;sMi=n.mi;cY=sY;cMo=sMo;render()};
+(function init(){
+  var n=bjNow();sY=n.y;sMo=n.mo;sD=n.d;sH=n.h;sMi=n.mi;cY=sY;cMo=sMo;
+  bldSel();createCards();updLbl();render();
+})();
+})();
+</script>
+</body>
+</html>
